@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.demo.api.mapper.SysRoleMapper">
+    <select id="findRoleByUser" resultType="com.demo.api.entity.SysRole">
+        select r.* from sys_role r,sys_user_role ur
+        where r.id = ur.role_id
+        and ur.user_id = #{sysRole.userId}
+        and ur.status=1
+        and r.status=1
+    </select>
+    <select id="findRolePermissionsByUser" resultType="com.demo.api.entity.SysPermission">
+        select p.* from sys_permission p
+        left join sys_role_permission rp on p.id = rp.permission_id
+        where rp.role_id IN
+        (
+        select ur.role_id from sys_user_role ur
+        where  ur.user_id = #{sysPermission.userId}
+        and ur.status=1
+        )
+        and rp.status=1
+        order by p.sort ASC
+    </select>
+
+    <select id="findRolePage" resultType="com.demo.api.entity.SysRole">
+        SELECT sr.*,su.login_name AS operationName,so.name as officeName
+        FROM sys_role AS sr
+        LEFT JOIN sys_user AS su
+        ON sr.operation_id = su.id
+        LEFT JOIN sys_office AS so
+        ON sr.office_id = so.id
+        WHERE 1=1
+        <if test="sysRole != null and sysRole.status != null">
+            AND sr.status = #{sysRole.status}
+        </if>
+        <if test="sysRole != null and sysRole.operationName != '' and sysRole.operationName != null">
+            AND su.login_name LIKE concat(#{sysRole.operationName},'%')
+        </if>
+        <if test="sysRole != null and sysRole.name != '' and sysRole.name != null">
+            AND sr.name LIKE concat(#{sysRole.name},'%')
+        </if>
+        <if test="sysRole != null and sysRole.officeName != '' and sysRole.officeName != null">
+            AND so.name LIKE concat(#{sysRole.officeName},'%')
+        </if>
+        <if test="sysRole != null and sysRole.startDate != null">
+            AND sr.create_time &gt;= #{sysRole.startDate}
+        </if>
+        <if test="sysRole != null and sysRole.endDate != null">
+            AND sr.create_time &lt;= #{sysRole.endDate}
+        </if>
+        ORDER by sr.create_time DESC
+    </select>
+
+    <select id="findRolePermissionPage" resultType="com.demo.api.entity.SysRolePermission">
+        SELECT srp.* ,sr.name AS roleName, sp.name AS permissionName, su.login_name AS operationName
+        FROM sys_role_permission AS srp
+        LEFT JOIN sys_role AS sr
+          ON srp.role_id = sr.id
+        LEFT JOIN sys_permission AS sp
+          ON srp.permission_id = sp.id
+        LEFT JOIN sys_user AS su
+          ON srp.operation_id = su.id
+        WHERE 1=1
+        <if test="sysRolePermission != null and sysRolePermission.status != null">
+            AND srp.status = #{sysRolePermission.status}
+        </if>
+        <if test="sysRolePermission != null and sysRolePermission.roleName != '' and sysRolePermission.roleName != null">
+            AND sr.name LIKE concat(#{sysRolePermission.roleName},'%')
+        </if>
+        <if test="sysRolePermission != null and sysRolePermission.permissionName != '' and sysRolePermission.permissionName != null">
+            AND sp.name LIKE concat(#{sysRolePermission.permissionName},'%')
+        </if>
+        <if test="sysRolePermission != null and sysRolePermission.operationName != '' and sysRolePermission.operationName != null">
+            AND su.login_name LIKE concat(#{sysRolePermission.operationName},'%')
+        </if>
+        <if test="sysRolePermission != null and sysRolePermission.startDate != null">
+            AND srp.create_time &gt;= #{sysRolePermission.startDate}
+        </if>
+        <if test="sysRolePermission != null and sysRolePermission.endDate != null">
+            AND srp.create_time &lt;= #{sysRolePermission.endDate}
+        </if>
+        ORDER BY srp.create_time DESC
+    </select>
+
+    <select id="findRolePermissionsByRole" resultType="com.demo.api.entity.SysRolePermission">
+        SELECT srp.* ,sr.name AS roleName, sp.name AS permissionName, su.login_name AS operationName
+        FROM sys_role_permission AS srp
+        LEFT JOIN sys_role AS sr
+        ON srp.role_id = sr.id
+        LEFT JOIN sys_permission AS sp
+        ON srp.permission_id = sp.id
+        LEFT JOIN sys_user AS su
+        ON srp.operation_id = su.id
+        WHERE srp.status = 1
+        AND srp.role_id = #{roleId}
+    </select>
+</mapper>

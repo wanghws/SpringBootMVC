@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.demo.api.mapper.SysUserMapper">
+
+    <select id="findSysUserPage" resultType="com.demo.api.entity.SysUser">
+        SELECT su.*, so.name as officeName
+        FROM sys_user AS su
+        LEFT JOIN sys_office AS so
+        ON su.office_id = so.id
+        WHERE 1=1
+        <if test="sysUser != null and sysUser.status != null">
+            AND su.status = #{sysUser.status}
+        </if>
+        <if test="sysUser != null and sysUser.email != '' and sysUser.email != null">
+            AND su.email = #{sysUser.email}
+        </if>
+        <if test="sysUser != null and sysUser.mobile != '' and sysUser.email != null">
+            AND su.mobile = #{sysUser.mobile}
+        </if>
+        <if test="sysUser != null and sysUser.loginName != '' and sysUser.loginName != null">
+            AND su.login_name LIKE concat(#{sysUser.loginName},'%')
+        </if>
+        <if test="sysUser != null and sysUser.officeName != '' and sysUser.officeName != null">
+            AND so.name LIKE concat(#{sysUser.officeName},'%')
+        </if>
+        <if test="sysUser != null and sysUser.regStartDate != null">
+            AND su.register_time &gt;= #{sysUser.regStartDate}
+        </if>
+        <if test="sysUser != null and sysUser.regEndDate != null">
+            AND su.register_time &lt;= #{sysUser.regEndDate}
+        </if>
+        <if test="sysUser != null and sysUser.loginStartDate != null">
+            AND su.login_time &gt;= #{sysUser.loginStartDate}
+        </if>
+        <if test="sysUser != null and sysUser.loginEndDate != null">
+            AND su.login_time &lt;= #{sysUser.loginEndDate}
+        </if>
+        ORDER BY su.register_time DESC
+
+    </select>
+    <select id="userRolesByUser" resultType="com.demo.api.entity.SysUserRole">
+        SELECT sur.*,su.login_time AS userName, sr.name AS roleName
+        FROM sys_user_role AS sur
+        LEFT JOIN sys_user su
+        ON sur.user_id = su.id
+        LEFT JOIN sys_role AS sr
+        ON sur.role_id = sr.id
+        LEFT JOIN sys_user AS so
+        ON sur.operation_id = so.id
+        WHERE sur.status = 1
+        AND user_id = #{sysUserId}
+    </select>
+</mapper>

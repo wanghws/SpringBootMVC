@@ -1,0 +1,125 @@
+server:
+  port: 8090
+spring:
+  application:
+    name: api
+  profiles:
+    active: @profileActive@
+  mvc:
+    favicon:
+      enabled: true
+  thymeleaf:
+    prefix: classpath:/templates
+    suffix: .html
+    encoding: UTF-8
+    cache: false
+mybatis-plus:
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath:mapper/*.xml
+logging:
+  config: classpath:logback.xml
+---
+spring:
+  profiles: development,intranet
+  autoconfigure:
+    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      stat-view-servlet:
+        loginUsername: admin
+        loginPassword: 123456
+    dynamic:
+      primary: master
+      druid:
+        initial-size: 1
+        max-active: 20
+        min-idle: 1
+        max-wait: 60000
+        time-between-eviction-runs-millis: 60000
+        min-evictable-idle-time-millis: 300000
+        test-while-idle: true
+        test-on-borrow: true
+        test-on-return: false
+        validation-query: SELECT 'x'
+        pool-prepared-statements: true
+        filters: stat,wall
+      datasource:
+        master:
+          username: work
+          password: 123456
+          driver-class-name: com.mysql.jdbc.Driver
+          url: jdbc:mysql://192.168.50.122:3306/mms?useUnicode=true&useSSL=false&characterEncoding=utf8
+        slave_1:
+          username: work
+          password: 123456
+          driver-class-name: com.mysql.jdbc.Driver
+          url: jdbc:mysql://192.168.50.122:3306/mms?useUnicode=true&useSSL=false&characterEncoding=utf8
+---
+spring:
+  profiles: test
+  autoconfigure:
+    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+  datasource:
+    druid:
+      stat-view-servlet:
+        loginUsername: admin
+        loginPassword: 123456
+    dynamic:
+      primary: master
+      druid:
+        initial-size: 1
+        max-active: 20
+        min-idle: 1
+        max-wait: 60000
+        time-between-eviction-runs-millis: 60000
+        min-evictable-idle-time-millis: 300000
+        test-while-idle: true
+        test-on-borrow: true
+        test-on-return: false
+        validation-query: SELECT 'x'
+        pool-prepared-statements: true
+        filters: stat,wall
+      datasource:
+        master:
+          username: work
+          password: 123456
+          driver-class-name: com.mysql.jdbc.Driver
+          url: jdbc:mysql://192.168.50.122:3306/mms?useUnicode=true&useSSL=false&characterEncoding=utf8
+        slave_1:
+          username: work
+          password: 123456
+          driver-class-name: com.mysql.jdbc.Driver
+          url: jdbc:mysql://192.168.50.122:3306/mms?useUnicode=true&useSSL=false&characterEncoding=utf8
+---
+spring:
+  profiles: production
+  autoconfigure:
+    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+  datasource:
+    dynamic:
+      primary: master
+      druid:
+        initial-size: 1
+        max-active: 20
+        min-idle: 1
+        max-wait: 60000
+        time-between-eviction-runs-millis: 60000
+        min-evictable-idle-time-millis: 300000
+        test-while-idle: true
+        test-on-borrow: true
+        test-on-return: false
+        validation-query: SELECT 'x'
+        pool-prepared-statements: true
+        filters: stat,wall
+      datasource:
+        master:
+          username: work
+          password: 123456
+          driver-class-name: com.mysql.jdbc.Driver
+          url: jdbc:mysql://192.168.50.122:3306/mms?useUnicode=true&useSSL=false&characterEncoding=utf8
+        slave_1:
+          username: work
+          password: 123456
+          driver-class-name: com.mysql.jdbc.Driver
+          url: jdbc:mysql://192.168.50.122:3306/mms?useUnicode=true&useSSL=false&characterEncoding=utf8

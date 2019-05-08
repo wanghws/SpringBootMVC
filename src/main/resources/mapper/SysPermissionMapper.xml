@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.demo.api.mapper.SysPermissionMapper">
+
+    <select id="findPermissionPage" resultType="com.demo.api.entity.SysPermission">
+        SELECT sp.*,spp.name AS parentName,su.login_name AS operationName
+        FROM sys_permission AS sp
+        LEFT JOIN sys_permission AS spp
+        ON sp.parent_id = spp.id
+        LEFT JOIN sys_user AS su
+        ON sp.operation_id = su.id
+        WHERE 1=1
+        <if test="sysPermission != null and sysPermission.status != null">
+            AND sp.status = #{sysPermission.status}
+        </if>
+        <if test="sysPermission != null and sysPermission.hidden != null">
+            AND sp.hidden = #{sysPermission.hidden}
+        </if>
+        <if test="sysPermission != null and sysPermission.operationName != '' and sysPermission.operationName != null">
+            AND su.login_name LIKE concat(#{sysPermission.operationName},'%')
+        </if>
+        <if test="sysPermission != null and sysPermission.parentName != '' and sysPermission.parentName != null">
+            AND spp.name LIKE concat(#{sysPermission.parentName},'%')
+        </if>
+        <if test="sysPermission != null and sysPermission.name != '' and sysPermission.name != null">
+            AND sp.name LIKE concat(#{sysPermission.name},'%')
+        </if>
+        <if test="sysPermission != null and sysPermission.permission != '' and sysPermission.permission != null">
+            AND sp.permission LIKE concat(#{sysPermission.permission},'%')
+        </if>
+        <if test="sysPermission != null and sysPermission.startDate != null">
+            AND sp.create_time &gt;= #{sysPermission.startDate}
+        </if>
+        <if test="sysPermission != null and sysPermission.endDate != null">
+            AND sp.create_time &lt;= #{sysPermission.endDate}
+        </if>
+        ORDER BY sp.sort ASC
+    </select>
+</mapper>
