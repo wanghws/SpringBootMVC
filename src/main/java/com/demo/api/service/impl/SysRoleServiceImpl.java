@@ -11,7 +11,7 @@ import com.demo.api.mapper.SysRoleMapper;
 import com.demo.api.service.ISysRolePermissionService;
 import com.demo.api.service.ISysRoleService;
 import com.google.common.collect.Lists;
-import me.chanjar.weixin.common.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
